@@ -156,16 +156,15 @@ public class Arena {
             _rewards.remove(i);
     }
     
+    public void setMaxReward(int i) {
+        if(i < 1)
+            i = 1;
+        _maxRewards = i;
+    }
+    
     public List<String> getRandomRewards() {
         List<String> items = _rewards;
-        int max = (int)Math.floor((double)(items.size()/2));
-        if(max < 1)
-            max = 1;
-        if(max > _maxRewards)
-            max = _maxRewards;
-        
-        max = Rnd.get(1,max);
         Collections.shuffle(items);
-        return items.subList(0, max);
+        return items.subList(0, Rnd.get(1, Math.min(_maxRewards, _rewards.size())));
     }
 }
