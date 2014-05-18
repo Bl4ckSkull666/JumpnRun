@@ -23,8 +23,11 @@ public class Arena {
     private final Location _pos2;
     private final List<String> _rewards = new ArrayList<>();
     private int _maxRewards = 1;
+    private long _rewardWaitTime = 0;
     private Location _rewardchest = null;
     private final List<Location> _checkpoints = new ArrayList<>();
+    private double _minMoney = 0;
+    private double _maxMoney = 0;
     
     //Portal bei Ausfall
     private Location _portalFallOutPos1 = null;
@@ -35,6 +38,8 @@ public class Arena {
     private Location _portalWinPos1 = null;
     private Location _portalWinPos2 = null;
     private Location _tpOnWin = null;
+    
+    private boolean _vehicleCollision = true;
     
     public Arena(String arena, Location pos1, Location pos2) {
         _arena = arena;
@@ -73,6 +78,22 @@ public class Arena {
             return false;
         return true;
     }
+    
+    /*public boolean leaveArena(Location from, Location to) {
+        return enterArena(to, from);
+    }
+    
+    public boolean enterArena(Location from, Location to) {
+        if(from.getBlockX() < Math.min(_pos1.getBlockX(), _pos2.getBlockX()) && to.getBlockX() >= Math.min(_pos1.getBlockX(), _pos2.getBlockX())) {
+            if(from.getBlockZ() < Math.min(_pos1.getBlockZ(), _pos2.getBlockZ()) && to.getBlockZ() >= Math.min(_pos1.getBlockZ(), _pos2.getBlockZ())) {
+                if(from.getBlockY() < Math.min(_pos1.getBlockY(), _pos2.getBlockY()) && to.getBlockY() >= Math.min(_pos1.getBlockY(), _pos2.getBlockY())) {
+                    
+                }
+            }
+        }
+        
+        return true;
+    }*/
     
     public int isCheckPoint(Location loc) {
         int i = 1;
@@ -162,9 +183,36 @@ public class Arena {
         _maxRewards = i;
     }
     
+    public long getRewardWaitTime() {
+        return _rewardWaitTime;
+    }
+    
+    public void setRewardWaitTime(long i) {
+        _rewardWaitTime = i;
+    }
+    
     public List<String> getRandomRewards() {
         List<String> items = _rewards;
         Collections.shuffle(items);
         return items.subList(0, Rnd.get(1, Math.min(_maxRewards, _rewards.size())));
+    }
+    
+    public boolean getVehicleCollision() {
+        return _vehicleCollision;
+    }
+    
+    public void setVehicleCollision(boolean bol) {
+        _vehicleCollision = bol;
+    }
+    
+    public void setMoney(double min, double max) {
+        _minMoney = min;
+        _maxMoney = max;
+    }
+    
+    public double getMoney() {
+        if(_minMoney <= 0.0 && _maxMoney <= 0.0)
+            return 0.0;
+        return (double)Rnd.get((int)_minMoney, (int)_maxMoney);
     }
 }

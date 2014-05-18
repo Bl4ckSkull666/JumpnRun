@@ -24,10 +24,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class JumpnRun  extends JavaPlugin {
     
     private static JumpnRun _instance;
-    private Map<String, List<PlayerArena>> _playerAreas = new HashMap<>();
-    private List<Arena> _areas = new ArrayList<>();
-    
-    private WorldEdit _we;
+    private final static Map<String, List<PlayerArena>> _playerAreas = new HashMap<>();
+    private final static List<Arena> _areas = new ArrayList<>();
+    private final static Map<String, Map<String, Integer>> _checkpoints = new HashMap<>();
+    private static WorldEdit _we;
     private static Economy _economy = null;
     
     @Override
@@ -56,11 +56,19 @@ public class JumpnRun  extends JavaPlugin {
         return (WorldEditPlugin) plugin;
     }
     
+    public static WorldEdit getWE() {
+        return _we;
+    }
+    
+    public static Economy getEco() {
+        return _economy;
+    }
+    
     public static JumpnRun getInstance() {
         return _instance;
     }
     
-    public List<PlayerArena> getPlayerAreas(String p) {  
+    public static List<PlayerArena> getPlayerAreas(String p) {  
         if(!_playerAreas.containsKey(p.toLowerCase())) {
             List<PlayerArena> list = new ArrayList<>();
             return list;
@@ -68,7 +76,32 @@ public class JumpnRun  extends JavaPlugin {
         return _playerAreas.get(p.toLowerCase());
     }
     
-    public void setPlayerAreas(String p, List<PlayerArena> list) {
+    public static void setPlayerAreas(String p, List<PlayerArena> list) {
         _playerAreas.put(p.toLowerCase(), list);
+    }
+    
+    public static List<Arena> getAreas() {
+        return _areas;
+    }
+    
+    public static int getCheckPoint(String a, String p) {
+        if(!_checkpoints.containsKey(a))
+            return -1;
+        if(!_checkpoints.get(a).containsKey(p))
+            return -1;
+        return _checkpoints.get(a).get(p);
+    }
+    
+    public static void setCheckPoint(String a, String p, int i) {
+        if(!_checkpoints.containsKey(a)) {
+            Map<String, Integer> chpmap = new HashMap<>();
+            _checkpoints.put(a, chpmap);
+        }
+        _checkpoints.get(a).put(p, i);
+    }
+    
+    public static void delCheckPoint(String a, String p) {
+        if(_checkpoints.containsKey(a))
+            _checkpoints.get(a).remove(p);
     }
 }
