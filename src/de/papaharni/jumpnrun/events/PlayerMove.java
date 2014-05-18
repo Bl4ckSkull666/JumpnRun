@@ -47,11 +47,17 @@ public class PlayerMove implements Listener {
         if(a.isInWinPortal(e.getTo())) {
             if(a.getRewards().size() > 0) {
                 List<String> itemList = a.getRandomRewards();
+                double m = a.getMoney();
+                if(m > 0.0)
+                    itemList.add("money " + m);
+                
                 if(a.getRewardChest() != null) {
                     //Speichere Reward in Virtueller Chest bis zur Öffnung der Chest.
+                    JumpnRun.setChestInv(p.getName(), -1, itemList);
+                    p.sendMessage("Deine Belohnung wurde in der Belohnungs Truhe abgelegt.");
                 } else {
                     //Gib Reward direkt.
-                    Items.giveReward(a.getRewardWaitTime(), itemList, a.getMoney(), p.getName());
+                    Items.giveReward(a.getRewardWaitTime(), itemList, p.getName());
                 }
             }
             if(a.getTpWinLocation() == null)

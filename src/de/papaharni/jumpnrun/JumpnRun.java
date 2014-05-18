@@ -27,6 +27,7 @@ public class JumpnRun  extends JavaPlugin {
     private final static Map<String, List<PlayerArena>> _playerAreas = new HashMap<>();
     private final static List<Arena> _areas = new ArrayList<>();
     private final static Map<String, Map<String, Integer>> _checkpoints = new HashMap<>();
+    private final static Map<String, Map<Long, List<String>>> _playerChest = new HashMap<>();
     private static WorldEdit _we;
     private static Economy _economy = null;
     
@@ -103,5 +104,25 @@ public class JumpnRun  extends JavaPlugin {
     public static void delCheckPoint(String a, String p) {
         if(_checkpoints.containsKey(a))
             _checkpoints.get(a).remove(p);
+    }
+    
+    public static Map<Long, List<String>> getPlayerChests(String p) {
+        if(!_playerChest.containsKey(p)) {
+             Map<Long, List<String>> clist = new HashMap<>();
+             return clist;
+        }
+        return _playerChest.get(p);
+    }
+    
+    public static Map<String, Map<Long, List<String>>> getChestMap() {
+        return _playerChest;
+    }
+    
+    public static void setChestInv(String p, long t, List<String> il) {
+        if(!_playerChest.containsKey(p)) {
+            Map<Long, List<String>> clist = new HashMap<>();
+            _playerChest.put(p, clist);
+        }
+        _playerChest.get(p).put((t > -1)?t:System.currentTimeMillis(), il);
     }
 }

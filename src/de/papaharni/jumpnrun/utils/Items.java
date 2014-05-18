@@ -24,12 +24,36 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public final class Items {
     
-    public static void giveReward(long time, List<String> itemList, double money, String p) {
-        Bukkit.getServer().getScheduler().runTaskLater(JumpnRun.getInstance(), new giveItemReward(itemList, money, p), (time*20));
+    public static void giveReward(long time, List<String> itemList, String p) {
+        Bukkit.getServer().getScheduler().runTaskLater(JumpnRun.getInstance(), new giveItemReward(itemList, p), (time*20));
     }
     
     public static boolean isItem(String str) {
         return ((getItem(str) != null)?true:false);
+    }
+    
+    public static List<String> checkMoney(String p, List<String> itemList) {
+        List<String> newList = new ArrayList<>();
+        for(String str: itemList) {
+            if(!str.startsWith("money ")) {
+                newList.add(str);
+                continue;
+            }
+            
+            String[] strA = str.split(" ");
+            if(strA.length < 2) {
+                continue;
+            }
+            
+            if(!Utils.isDouble(strA[1])) {
+                continue;
+            }
+            
+            JumpnRun.getEco().depositPlayer(p, Double.parseDouble(strA[1]));
+            if(Bukkit.getPlayerExact(p) != null)
+                Bukkit.getPlayerExact(p).sendMessage("Dir wurden " + strA[1] + " Coins gutgeschrieben.");
+        }
+        return itemList;
     }
     
     public static ItemStack getItem(String str) {
@@ -171,45 +195,37 @@ public final class Items {
 class giveItemReward implements Runnable {
     private final List<String> _itemList;
     private final Player _p;
-    private final double _money;
     private final String _pName; 
-    public giveItemReward(List<String> itemList, double money, String p) {
+    public giveItemReward(List<String> itemList, String p) {
         _itemList = itemList;
         _p = Bukkit.getPlayerExact(p);
-        _money = money;
         _pName = p;
     }
     
     @Override
     public void run() {
         if(_p == null) {
-            Items.giveReward(30, _itemList, _money, _pName);
+            Items.giveReward(30, _itemList, _pName);
             return;
         }
         
         if(!_p.isOnline()) {
-            Items.giveReward(30, _itemList, _money, _pName);
+            Items.giveReward(30, _itemList, _pName);
             return;
         }
         
         if(_p.isDead()) {
-            Items.giveReward(30, _itemList, _money, _pName);
+            Items.giveReward(30, _itemList, _pName);
             return;
         }
         
-        for(String str: _itemList) {
+        List<String> itemList = Items.checkMoney(_pName, _itemList);
+        for(String str: itemList) {
             if(!Items.isItem(str))
                 continue;
             
             _p.getInventory().addItem(Items.getItem(str));
         }
         _p.sendMessage("Du hast soeben deine Belohnung erhalten.");
-
-        if(_money > 0.0) {
-            if(JumpnRun.getEco() != null) {
-                JumpnRun.getEco().depositPlayer(_p.getName(), _money);
-                _p.sendMessage("Du hast " + String.valueOf(_money) + " erhalten.");
-            }
-        }
     }
 }
